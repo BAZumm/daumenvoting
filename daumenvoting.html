@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daumen-Voting</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; padding: 2em; }
+    .card { max-width: 700px; margin: auto; padding: 1.5em; border: 1px solid #ccc; border-radius: 10px; }
+    button { margin: 0.5em; padding: 0.5em 1em; font-size: 1rem; border-radius: 8px; border: none; cursor: pointer; }
+    .vote-buttons, .admin-buttons { margin-bottom: 1.5em; }
+    .result { font-size: 1.2em; margin-top: 1em; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Daumen-Voting für bis zu 160 Personen</h1>
+    <p>Jede Person kann einmal 👍 oder 👎 klicken.</p>
+    <div class="vote-buttons">
+      <button onclick="vote(true)">👍 Daumen hoch</button>
+      <button onclick="vote(false)">👎 Daumen runter</button>
+    </div>
+    <div id="status">
+      <p class="result">Abgegebene Stimmen: <span id="votes">0</span> / 160</p>
+      <p class="result">👍: <span id="upCount">0</span></p>
+      <p class="result">👎: <span id="downCount">0</span></p>
+    </div>
+    <div class="admin-buttons">
+      <button onclick="resetVotes()">🔄 Zurücksetzen</button>
+      <button onclick="exportVotes()">💾 Ergebnisse exportieren</button>
+    </div>
+  </div>
+
+  <script>
+    let thumbsUp = 0;
+    let thumbsDown = 0;
+    let totalVotes = 0;
+    const maxVotes = 160;
+
+    const upCountEl = document.getElementById("upCount");
+    const downCountEl = document.getElementById("downCount");
+    const votesEl = document.getElementById("votes");
+
+    function vote(isUp) {
+      if (totalVotes >= maxVotes) {
+        alert("Die maximale Anzahl von 160 Stimmen wurde erreicht.");
+        return;
+      }
+
+      if (isUp) {
+        thumbsUp++;
+      } else {
+        thumbsDown++;
+      }
+      totalVotes++;
+      updateDisplay();
+    }
+
+    function resetVotes() {
+      if (confirm("Möchtest du wirklich alle Stimmen zurücksetzen?")) {
+        thumbsUp = 0;
+        thumbsDown = 0;
+        totalVotes = 0;
+        updateDisplay();
+      }
+    }
+
+    function exportVotes() {
+      const result = `Abgegebene Stimmen: ${totalVotes}/160\\n👍: ${thumbsUp}\\n👎: ${thumbsDown}`;
+      const blob = new Blob([result], { type: "text/plain;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "stimmenergebnisse.txt";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    function updateDisplay() {
+      upCountEl.textContent = thumbsUp;
+      downCountEl.textContent = thumbsDown;
+      votesEl.textContent = totalVotes;
+    }
+  </script>
+</body>
+</html>
